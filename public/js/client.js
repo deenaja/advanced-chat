@@ -65,7 +65,8 @@ function toggleChatWindow() {
 
 $(document).ready(function() {
   //setup "global" variables first
-  var socket = io.connect("127.0.0.1:3000");
+    var socket = io.connect("apichatry.deenaja.com:3000");
+  //var socket = io();
   var myRoomID = null;
 
   $("form").submit(function(event) {
