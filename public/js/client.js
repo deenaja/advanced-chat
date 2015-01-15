@@ -7,6 +7,7 @@
 var final_transcript = '';
 var recognizing = false;
 var last10messages = []; //to be populated later
+var people_type = '';
 
 if (!('webkitSpeechRecognition' in window)) {
   console.log("webkitSpeechRecognition is not available");
@@ -65,7 +66,7 @@ function toggleChatWindow() {
 
 $(document).ready(function() {
   //setup "global" variables first
-    var socket = io.connect("apichatry.deenaja.com:3000");
+    var socket = io.connect("127.0.0.1:3000");
   //var socket = io();
   var myRoomID = null;
 
@@ -82,8 +83,9 @@ $(document).ready(function() {
   $("#main-chat-screen").hide();
   $("#errors").hide();
   $("#name").focus();
-  $("#join").attr('disabled', 'disabled'); 
-  
+  $("#join").attr('disabled', 'disabled');
+  $("#group_normal").click(function(){ people_type=1; });
+  $("#group_staff").click(function(){ people_type=2; });
   if ($("#name").val() === "") {
     $("#join").attr('disabled', 'disabled');
   }
@@ -91,6 +93,10 @@ $(document).ready(function() {
   //enter screen
   $("#nameForm").submit(function() {
     var name = $("#name").val();
+    if(people_type==''){
+    	alert('ee');
+    	return false;
+    }
     var device = "desktop";
     if (navigator.userAgent.match(/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile/i)) {
       device = "mobile";
@@ -100,7 +106,7 @@ $(document).ready(function() {
       $("#errors").append("Please enter a name");
       $("#errors").show();
     } else {
-      socket.emit("joinserver", name, device);
+      socket.emit("joinserver", name,people_type, device);
       toggleNameForm();
       toggleChatWindow();
       $("#msg").focus();
@@ -333,17 +339,39 @@ socket.on("history", function(data) {
   socket.on("update-people", function(data){
     //var peopleOnline = [];
     $("#people").empty();
-    $('#people').append("<li class=\"list-group-item active\">People online <span class=\"badge\">"+data.count+"</span></li>");
+    count_people = 0 ;
+    count_staff = 0;
     $.each(data.people, function(a, obj) {
-      if (!("country" in obj)) {
-        html = "";
-      } else {
-        html = "<img class=\"flag flag-"+obj.country+"\"/>";
-      }
-      $('#people').append("<li class=\"list-group-item\"><span>" + obj.name + "</span> <i class=\"fa fa-"+obj.device+"\"></i> " + html + " <a href=\"#\" class=\"whisper btn btn-xs\">whisper</a></li>");
-      //peopleOnline.push(obj.name);
+    	if(obj.type==1){
+    		count_people++;
+    	}else if(obj.type==2){
+    		count_staff++;
+    	}
     });
-
+    $('#people').append("<li class=\"list-group-item active\">ประชาชน online <span class=\"badge\">"+count_people+"</span></li>");
+    $.each(data.people, function(a, obj) {
+    	if(obj.type==1){
+	      if (!("country" in obj)) {
+	        html = "";
+	      } else {
+	        html = "<img class=\"flag flag-"+obj.country+"\"/>";
+	      }
+	      $('#people').append("<li class=\"list-group-item\"><span>" + obj.name + "</span> <i class=\"fa fa-"+obj.device+"\"></i> " + html + " <a href=\"#\" class=\"whisper btn btn-xs\">whisper</a></li>");
+	      //peopleOnline.push(obj.name);
+    	}
+    });
+    $('#people').append("<li class=\"list-group-item active\">เจ้าหน้าที่ online <span class=\"badge\">"+count_staff+"</span></li>");
+    $.each(data.people, function(a, obj) {
+    	if(obj.type==2){
+	      if (!("country" in obj)) {
+	        html = "";
+	      } else {
+	        html = "<img class=\"flag flag-"+obj.country+"\"/>";
+	      }
+	      $('#people').append("<li class=\"list-group-item\"><span>" + obj.name + "</span> <i class=\"fa fa-"+obj.device+"\"></i> " + html + " <a href=\"#\" class=\"whisper btn btn-xs\">whisper</a></li>");
+	      //peopleOnline.push(obj.name);
+    	}
+    });
     /*var whisper = $("#whisper").prop('checked');
     if (whisper) {
       $("#msg").typeahead({

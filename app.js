@@ -174,8 +174,9 @@ function purge(s, action) {
 }
 
 io.sockets.on("connection", function (socket) {
-
-	socket.on("joinserver", function(name, device) {
+    //normal = 1
+	//staff = 2
+	socket.on("joinserver", function(name,type, device) {
 		var exists = false;
 		var ownerRoomID = inRoomID = null;
 
@@ -194,7 +195,7 @@ io.sockets.on("connection", function (socket) {
 			} while (!exists);
 			socket.emit("exists", {msg: "The username already exists, please pick another one.", proposedName: proposedName});
 		} else {
-			people[socket.id] = {"name" : name, "owns" : ownerRoomID, "inroom": inRoomID, "device": device};
+			people[socket.id] = {"name" : name,"type":type, "owns" : ownerRoomID, "inroom": inRoomID, "device": device};
 			socket.emit("update", "You have connected to the server.");
 			io.sockets.emit("update", people[socket.id].name + " is online.")
 			sizePeople = _.size(people);

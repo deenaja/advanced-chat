@@ -14,6 +14,15 @@
       <p class="lead">Chat application - using node.js and socket.io</p>
       <p>Please enter your name below and click 'Join' or hit the 'Enter' key.</p>
         <form class="form-inline" id="nameForm">
+        <div class="btn-group">
+            <button type="button" class="btn btn-lg btn-info dropdown-toggle" data-toggle="dropdown" >
+              group <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="#" name="people" id="group_normal">ประชาชน</a></li>
+              <li><a href="#" name="staff" id="group_staff">เจ้าหน้าที่</a></li>
+            </ul>
+          </div>
           <div class="form-group">
             <input type="text" class="form-control input-lg" placeholder="Your name" id="name">
           </div>
@@ -44,7 +53,7 @@
             <ul class="dropdown-menu" role="menu">
               <li><a href="#" name="createRoom" data-toggle="modal" data-target="#roomModal">Create room</a></li>
               <li><a href="#" name="leave" id="leave">Leave current room</a></li>
-              <!--<li><a href="#" name="disconnect" id="disconnect">Disconnect from chat</a></li>-->
+               <li><a href="#" name="disconnect" id="disconnect">Disconnect from chat</a></li>
             </ul>
           </div>
         </form>
